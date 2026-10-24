@@ -1,0 +1,99 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.141'
+}
+
+version = "${mod_version}-${minecraft_version}"
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = neo_version
+
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url = 'https://neoforged.forgecdn.net/releases' }
+    maven { url = 'https://maven.neoforged.net/releases' }
+    flatDir { dir 'libs' }
+}
+
+// maven.neoforged.net is unreachable from this machine; use the official CDN mirror instead.
+repositories.named('NeoForged Releases') {
+    url = uri('https://neoforged.forgecdn.net/releases')
+}
+repositories.named('Mojang Meta') {
+    url = uri('https://neoforged.forgecdn.net/mojang-meta')
+}
+
+dependencies {
+    // Compile-time view of the integration targets; all of them are provided by the game at runtime.
+    compileOnly files(
+            'libs/trulybestfriends-0.2.5-1.21.1.jar',
+            'libs/enigmaticlegacyplus-1.21.1-1.1.2.jar',
+            'libs/curios-neoforge-9.5.1+1.21.1.jar'
+    )
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+    ]
+    inputs.properties replaceProperties
+    filteringCharset = 'UTF-8'
+
+    filesMatching(['META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
