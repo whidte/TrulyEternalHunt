@@ -1,0 +1,25 @@
+# Build output
+.gradle/
+build/
+run/
+run-data/
+mcmodsrepo/
+
+# IDE
+.idea/
+*.iml
+.idea_modules/
+.eclipse/
+.classpath
+.project
+.settings/
+.vscode/
+bin/
+
+# Local integration jars (see libs/README.md)
+libs/*.jar
+!libs/README.md
+
+# Build logs
+*.log
+
