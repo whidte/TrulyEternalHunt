@@ -2,7 +2,7 @@
 
 让 **血腥狩猎手册**（Sanguinary Hunting Handbook）的宠物加成改用 **真正永恒的伙伴（Truly Best Friends, TBF）** 的收录记录来判定。
 
-- 1.21.1 / NeoForge：`enigmaticlegacyplus:sanguinary_handbook`（Enigmatic Legacy+ 1.1.2+）
+- 1.21.1 / NeoForge：`enigmaticlegacyplus:sanguinary_handbook`（Enigmatic Legacy+ 1.0.0+）
 - 1.20.1 / Forge 版本在 `master` 分支。
 
 ## 规则

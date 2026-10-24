@@ -18,8 +18,8 @@ if ($tbf) {
 }
 
 $downloads = @(
-    @{ Url = "https://cdn.modrinth.com/data/oIjj1Fan/versions/ELK5gx91/enigmaticlegacyplus-1.21.1-1.1.2.jar";
-       Target = "enigmaticlegacyplus-1.21.1-1.1.2.jar" },
+    @{ Url = "https://cdn.modrinth.com/data/oIjj1Fan/versions/sE5KVcHA/enigmaticlegacyplus-1.21.1-1.0.0.jar";
+       Target = "enigmaticlegacyplus-1.21.1-1.0.0.jar" },
     @{ Url = "https://cdn.modrinth.com/data/vvuO3ImH/versions/yohfFbgD/curios-neoforge-9.5.1%2B1.21.1.jar";
        Target = "curios-neoforge-9.5.1+1.21.1.jar" }
 )
