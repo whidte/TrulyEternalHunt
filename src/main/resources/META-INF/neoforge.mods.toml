@@ -42,10 +42,13 @@ description='''让宠物类物品改为依据「真正永恒的伙伴」的宠�
     ordering="AFTER"
     side="BOTH"
 
+# Curios is only ever reached indirectly, through Enigmatic Legacy+ / Relics, so it is no hard prerequisite
+# here. The range is deliberately open: this mod never calls Curios itself, and a stricter check could only
+# block startup over a mod we do not actually use.
 [[dependencies.trulyeternalhunt]]
     modId="curios"
-    type="required"
-    versionRange="[9.5.0,)"
+    type="optional"
+    versionRange="[0,)"
     ordering="AFTER"
     side="BOTH"
 
