@@ -10,7 +10,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 
@@ -25,8 +24,10 @@ import java.util.Map;
  * multiplier it is about to apply at {@code HIGHEST}, then at {@code LOWEST} divide that exact
  * factor back out and apply our own rule on top. This removes the vanilla qualification without
  * touching the other mod's event handler and without discarding unrelated damage modifiers.</p>
+ *
+ * <p>Registered from the mod constructor only when Enigmatic Legacy+ is present, because the
+ * helpers it calls live in that mod.</p>
  */
-@EventBusSubscriber(modid = TrulyEternalHunt.MODID, bus = EventBusSubscriber.Bus.GAME)
 public final class HandbookEvents {
     private static final Map<LivingIncomingDamageEvent, Double> ORIGINAL_FACTORS =
             Collections.synchronizedMap(new IdentityHashMap<>());

@@ -2,7 +2,6 @@ package com.whidte.trulyeternalhunt.event;
 
 import auviotre.enigmatic.legacy.contents.item.books.SanguinaryHandbook;
 import com.google.common.collect.Multimap;
-import com.whidte.trulyeternalhunt.TrulyEternalHunt;
 import com.whidte.trulyeternalhunt.compat.HandbookCompat;
 import com.whidte.trulyeternalhunt.compat.TbfPets;
 import com.whidte.trulyeternalhunt.config.Config;
@@ -15,7 +14,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 /**
@@ -23,8 +21,9 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
  *
  * <p>Runs after the original handler: TBF pets get the modifiers, every other owned pet gets
  * them removed, so the new qualification also covers the speed half of the item.</p>
+ *
+ * <p>Registered from the mod constructor only when Enigmatic Legacy+ is present.</p>
  */
-@EventBusSubscriber(modid = TrulyEternalHunt.MODID, bus = EventBusSubscriber.Bus.GAME)
 public final class SpeedEvents {
     private SpeedEvents() {
     }
