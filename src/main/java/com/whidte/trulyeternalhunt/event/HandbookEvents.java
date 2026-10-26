@@ -12,7 +12,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -25,8 +24,10 @@ import java.util.Map;
  * multiplier it is about to apply at {@code HIGHEST}, then at {@code LOWEST} divide that exact
  * factor back out and apply our own rule on top. This removes the vanilla qualification without
  * touching the other mod's event handler and without discarding unrelated damage modifiers.</p>
+ *
+ * <p>Registered from the mod constructor only when Enigmatic Addons is present, because the
+ * helpers it calls live in that mod.</p>
  */
-@Mod.EventBusSubscriber(modid = TrulyEternalHunt.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class HandbookEvents {
     private static final Map<LivingHurtEvent, Double> ORIGINAL_FACTORS =
             Collections.synchronizedMap(new IdentityHashMap<>());

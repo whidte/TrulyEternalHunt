@@ -7,8 +7,9 @@ modId="trulyeternalhunt"
 version="${mod_version}"
 displayName="真正永恒的狩猎"
 authors="whidte"
-description='''让宠物类物品改为依据「真正永恒的伙伴」的宠物记录来判定：
-- 血腥狩猎手册：只有被 TBF 收录、且主人是该玩家的宠物，才能获得手册的宠物攻击伤害与速度加成；
+description='''让宠物类物品改为依据「真正永恒的伙伴」的宠物记录来判定。
+两个联动目标都是可选的，可以只装其中一个：
+- 血腥狩猎手册（安装 Enigmatic Legacy+ / Enigmatic Addons 时生效）：只有被 TBF 收录、且主人是该玩家的宠物，才能获得手册的宠物攻击伤害与速度加成；
 - Relics 猎手腰带（安装 Relics 时生效）：伤害加成与腰带经验也改按 TBF 记录判定。'''
 
 [[dependencies.trulyeternalhunt]]
@@ -34,14 +35,14 @@ description='''让宠物类物品改为依据「真正永恒的伙伴」的宠�
 
 [[dependencies.trulyeternalhunt]]
     modId="enigmaticlegacy"
-    mandatory=true
+    mandatory=false
     versionRange="[2.30.1,)"
     ordering="AFTER"
     side="BOTH"
 
 [[dependencies.trulyeternalhunt]]
     modId="enigmaticaddons"
-    mandatory=true
+    mandatory=false
     versionRange="[1.2.6,)"
     ordering="AFTER"
     side="BOTH"

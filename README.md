@@ -2,8 +2,10 @@
 
 让宠物类物品的加成改用 **真正永恒的伙伴（Truly Best Friends, TBF）** 的收录记录来判定「谁算我的宠物」。
 
-- 1.20.1 / Forge：`enigmaticaddons:sanguinary_handbook`（Enigmatic Addons 1.2.6+）、`relics:hunter_belt`（Relics 0.8.0+，可选）
+- 1.20.1 / Forge：`enigmaticaddons:sanguinary_handbook`（Enigmatic Addons 1.2.6+，可选）、`relics:hunter_belt`（Relics 0.8.0+，可选）
 - 1.21.1 / NeoForge 版本在 `1.21.1` 分支。
+
+两个联动目标都是**可选**且互相独立的，只装其中之一时只有对应的那半生效；都装上就两半同时生效。唯一的硬前置是「真正永恒的伙伴」。
 
 ## 血腥狩猎手册
 
@@ -48,7 +50,18 @@
 
 这样既不会叠加两次，也不会误删其它模组的伤害修改。
 
-Relics 支持是可选依赖：只有检测到 `relics` 已加载时才注册对应事件处理器，未安装 Relics 时这些类不会被加载。
+## 可选联动
+
+`enigmaticaddons`（连同它自己依赖的 `enigmaticlegacy`）与 `relics` 都是可选依赖，且彼此独立：
+
+| 装了什么 | 生效的部分 |
+| --- | --- |
+| 只有 Enigmatic Addons | 血腥狩猎手册（伤害 + 攻速/移速） |
+| 只有 Relics | 猎手腰带（伤害 + 训练经验） |
+| 两个都有 | 全部 |
+| 都没有 | 模组正常加载但什么都不做，日志里给一条 warning |
+
+实现上，凡是会碰到目标模组类型的处理器类都**不再**用 `@Mod.EventBusSubscriber` 自动注册，而是由主类在 `ModList.get().isLoaded(...)` 为真时手动 `register(...)`。这样目标模组不存在时，这些类根本不会被加载，也就不会出现 `NoClassDefFoundError`。
 
 ## 构建
 
