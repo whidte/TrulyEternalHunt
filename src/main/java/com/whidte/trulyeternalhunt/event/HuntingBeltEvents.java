@@ -84,7 +84,10 @@ public final class HuntingBeltEvents {
         }
         float before = event.getAmount();
         event.setAmount((float) (before * own));
-        HunterBeltCompat.awardExperience(owner);
+        // Experience cannot be revoked, so only top it up for pets the original missed.
+        if (!HunterBeltCompat.originalCovers(owner, pet)) {
+            HunterBeltCompat.awardExperience(owner);
+        }
         if (Config.DEBUG.get()) {
             TrulyEternalHunt.LOGGER.info("[Truly Eternal Hunt] hunter belt: pet {} of {} dealt damage: {} -> {} (x{})",
                     pet.getUUID(), owner.getGameProfile().getName(), before, event.getAmount(), own);
