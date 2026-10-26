@@ -21,7 +21,11 @@ $downloads = @(
     @{ Url = "https://cdn.modrinth.com/data/oIjj1Fan/versions/sE5KVcHA/enigmaticlegacyplus-1.21.1-1.0.0.jar";
        Target = "enigmaticlegacyplus-1.21.1-1.0.0.jar" },
     @{ Url = "https://cdn.modrinth.com/data/vvuO3ImH/versions/yohfFbgD/curios-neoforge-9.5.1%2B1.21.1.jar";
-       Target = "curios-neoforge-9.5.1+1.21.1.jar" }
+       Target = "curios-neoforge-9.5.1+1.21.1.jar" },
+    @{ Url = "https://cdn.modrinth.com/data/OCJRPujW/versions/GPIrZGug/relics-1.21.1-0.12.10.jar";
+       Target = "relics-1.21.1-0.12.10.jar" },
+    @{ Url = "https://cdn.modrinth.com/data/RH2KUdKJ/versions/yVCCi6TK/OctoLib-NEOFORGE-0.6.2%2B1.21.jar";
+       Target = "OctoLib-NEOFORGE-0.6.2+1.21.jar" }
 )
 foreach ($item in $downloads) {
     $target = Join-Path $libs $item.Target

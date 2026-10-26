@@ -11,7 +11,7 @@ public final class Config {
             .define("enabled", true);
 
     public static final ModConfigSpec.BooleanValue REPLACE_VANILLA_RULE = BUILDER
-            .comment("true: only TBF-recorded pets owned by the player receive the handbook buff.",
+            .comment("true: only TBF-recorded pets owned by the player receive the handbook / hunting belt pet effects.",
                     "false: keep the vanilla OwnableEntity rule and merely add TBF pets that it misses.")
             .define("replaceVanillaRule", true);
 
@@ -30,6 +30,23 @@ public final class Config {
     public static final ModConfigSpec.BooleanValue DEBUG = BUILDER
             .comment("Log every damage adjustment.")
             .define("debug", false);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_HUNTING_BELT = BUILDER
+            .comment("Enable the Relics Hunting Belt override (only active when Relics is installed).",
+                    "Every belt rule below is part of this switch.")
+            .define("enableHuntingBelt", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_HUNTING_BELT_RESISTANCE = BUILDER
+            .comment("Reroute the Leader rank damage resistance (nearby pet count).")
+            .define("enableHuntingBeltResistance", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_HUNTING_BELT_EXPERIENCE = BUILDER
+            .comment("Also award Pack experience / statistics when a TBF pet deals damage.")
+            .define("enableHuntingBeltExperience", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_HUNTING_BELT_REVIVAL = BUILDER
+            .comment("Also drop a pet bone when a TBF pet dies while the owner has the Revival rank.")
+            .define("enableHuntingBeltRevival", true);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 

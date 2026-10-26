@@ -1,11 +1,11 @@
 # 真正永恒的狩猎 / Truly Eternal Hunt
 
-让 **血腥狩猎手册**（Sanguinary Hunting Handbook）的宠物加成改用 **真正永恒的伙伴（Truly Best Friends, TBF）** 的收录记录来判定。
+让宠物类物品的加成改用 **真正永恒的伙伴（Truly Best Friends, TBF）** 的收录记录来判定「谁算我的宠物」。
 
-- 1.21.1 / NeoForge：`enigmaticlegacyplus:sanguinary_handbook`（Enigmatic Legacy+ 1.0.0+）
+- 1.21.1 / NeoForge：`enigmaticlegacyplus:sanguinary_handbook`（Enigmatic Legacy+ 1.0.0+）、`relics:hunting_belt`（Relics 0.12.10+，可选）
 - 1.20.1 / Forge 版本在 `master` 分支。
 
-## 规则
+## 血腥狩猎手册
 
 只有同时满足以下条件的宠物才能获得手册加成：
 
@@ -25,15 +25,36 @@
 - 千咒卷轴（Cursed Scroll）：按诅咒等级追加伤害；
 - 烈焰巨力（Blazing Might）：等级 > II 时追加伤害。
 
+## Relics 猎手腰带（Hunting Belt）
+
+安装 Relics 后自动启用，把腰带的四处「谁算我的宠物」判定全部改到 TBF 记录上：
+
+| 腰带效果 | 原版判定 | 现在 |
+| --- | --- | --- |
+| 兽群（Pack）伤害加成 | 攻击者是 `OwnableEntity` 且主人戴腰带 | 攻击者是该玩家的 TBF 宠物 |
+| 领袖（Leader）减伤：统计半径内宠物数量 | 半径内主人是自己的 `OwnableEntity` | 半径内该玩家的 TBF 宠物（`replaceVanillaRule=false` 时为两者并集） |
+| 兽群经验 / 统计 | 同上 | 同上；原版已结算过的宠物不重复结算 |
+| 复活（Revival）掉落宠物骨 | 死亡的 `OwnableEntity` 宠物主人戴腰带 | 死亡的 TBF 宠物 |
+
+腰带自身的数值、等级、Rank 修饰与目标选择（`TargetingUtils.canHarm`）全部沿用原版；只替换「谁是宠物」这一步。因此 TBF 收录的僵尸、模组召唤物等也能吃到加成，而未收录的别人的狗不会再吃你的腰带。
+
+两点需要说明：
+
+- 经验与宠物骨只能**追加**：原版已经结算过的原版宠物无法在不改 Relics 代码的前提下撤回，所以 `replaceVanillaRule=false/true` 对这两项都只影响「额外给谁」，不影响原版原有的那份。
+- 复活沿用 Relics 自己的 `relics:hunting_belt_bone_drop` 标记，所以宠物骨的掉落替换行为与原本一致。
+
 ## 实现方式
 
-不修改 Enigmatic Legacy+ 的任何类，也不使用 Mixin：
+不修改 Enigmatic Legacy+ / Relics 的任何类，也不使用 Mixin：
 
-- 在 `LivingIncomingDamageEvent` 的 `HIGHEST` 阶段精确复刻原版判定与倍率；
+- 在事件 `HIGHEST` 阶段精确复刻原版判定与倍率；
 - 在 `LOWEST` 阶段把原版贡献除回去，再按 TBF 规则重新施加；
-- 在 `EntityTickEvent.Pre` 的 `LOWEST` 阶段对攻速/移速修饰符做同样的替换。
+- 手册：`LivingIncomingDamageEvent` + `EntityTickEvent.Pre`（攻速/移速）；
+- 腰带：`LivingDamageEvent.Pre`（伤害、领袖减伤）、`LivingDamageEvent.Post`（经验）、`LivingDeathEvent`（宠物骨）。
 
 这样既不会叠加两次，也不会误删其它模组的伤害修改。
+
+Relics 支持是可选依赖：只有检测到 `relics` 已加载时才注册对应事件处理器，未安装 Relics 时这些类不会被加载。
 
 顺带修复了上游的一个问题：1.21.1 的 ELP 用 `hasCurio` 查找这本普通书本，导致手册原本无法生效；本模组同时接受物品栏与饰品栏。
 
@@ -48,8 +69,12 @@
 `config/trulyeternalhunt-common.toml`：
 
 - `enabled`：总开关
-- `replaceVanillaRule`：严格替换（默认 `true`）；`false` 时保留原版规则，只额外覆盖 TBF 宠物
+- `replaceVanillaRule`：严格替换（默认 `true`）；`false` 时保留原版规则，只额外覆盖 TBF 宠物（手册与腰带共用）
 - `requireCursedOne`：保留手册的诅咒者条件
-- `enableSpeedEffect`：攻速/移速部分也按新规则
+- `enableSpeedEffect`：手册的攻速/移速部分也按新规则
+- `enableHuntingBelt`：猎手腰带兼容总开关
+- `enableHuntingBeltResistance`：腰带「领袖」减伤的宠物统计
+- `enableHuntingBeltExperience`：腰带兽群经验 / 统计
+- `enableHuntingBeltRevival`：腰带复活掉落宠物骨
 - `ownerCacheSeconds`：TBF 记录缓存时间
 - `debug`：打印每次伤害调整
