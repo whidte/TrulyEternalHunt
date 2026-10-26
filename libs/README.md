@@ -8,5 +8,6 @@
 | `EnigmaticLegacy-2.30.1.jar` | Enigmatic Legacy 2.30.1（CurseForge） |
 | `enigmaticaddons-1.2.6.jar` | Enigmatic Addons 1.2.6（CurseForge / Modrinth） |
 | `curios-forge-5.14.1+1.20.1.jar` | Curios 5.14.1（CurseForge / Modrinth） |
+| `relics-1.20.1-0.8.0.13.jar` | [Relics 0.8.0.13 on Modrinth](https://modrinth.com/mod/relics-mod) |
 
-也可以直接运行 `scripts/setup-libs.ps1`，脚本会从本机常见的整合包目录复制这些 jar。
+也可以直接运行 `scripts/setup-libs.ps1`，脚本会从本机常见的整合包目录复制这些 jar，并从 Modrinth 下载 Relics。

@@ -11,7 +11,7 @@ public final class Config {
             .define("enabled", true);
 
     public static final ForgeConfigSpec.BooleanValue REPLACE_VANILLA_RULE = BUILDER
-            .comment("true: only TBF-recorded pets owned by the player receive the handbook buff.",
+            .comment("true: only TBF-recorded pets owned by the player receive the handbook / hunter belt pet effects.",
                     "false: keep the vanilla OwnableEntity rule and merely add TBF pets that it misses.")
             .define("replaceVanillaRule", true);
 
@@ -30,6 +30,14 @@ public final class Config {
     public static final ForgeConfigSpec.BooleanValue DEBUG = BUILDER
             .comment("Log every damage adjustment.")
             .define("debug", false);
+
+    public static final ForgeConfigSpec.BooleanValue ENABLE_HUNTING_BELT = BUILDER
+            .comment("Enable the Relics Hunter Belt override (only active when Relics is installed).")
+            .define("enableHuntingBelt", true);
+
+    public static final ForgeConfigSpec.BooleanValue ENABLE_HUNTING_BELT_EXPERIENCE = BUILDER
+            .comment("Also spread belt experience when a TBF pet deals damage.")
+            .define("enableHuntingBeltExperience", true);
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 

@@ -1,11 +1,11 @@
 # 真正永恒的狩猎 / Truly Eternal Hunt
 
-让 **血腥狩猎手册**（Sanguinary Hunting Handbook）的宠物加成改用 **真正永恒的伙伴（Truly Best Friends, TBF）** 的收录记录来判定。
+让宠物类物品的加成改用 **真正永恒的伙伴（Truly Best Friends, TBF）** 的收录记录来判定「谁算我的宠物」。
 
-- 1.20.1 / Forge：`enigmaticaddons:sanguinary_handbook`（Enigmatic Addons 1.2.6+）
-- 1.21.1 / NeoForge：`enigmaticlegacyplus:sanguinary_handbook`（Enigmatic Legacy+ 1.1.2+）
+- 1.20.1 / Forge：`enigmaticaddons:sanguinary_handbook`（Enigmatic Addons 1.2.6+）、`relics:hunter_belt`（Relics 0.8.0+，可选）
+- 1.21.1 / NeoForge 版本在 `1.21.1` 分支。
 
-## 规则
+## 血腥狩猎手册
 
 只有同时满足以下条件的宠物才能获得手册加成：
 
@@ -25,15 +25,30 @@
 - 千咒卷轴（Cursed Scroll）：按诅咒等级追加伤害；
 - 1.21.1 额外的烈焰巨力（Blazing Might）联动。
 
+## Relics 猎手腰带（Hunter Belt）
+
+安装 Relics 后自动启用，把腰带的「谁算我的宠物」判定改到 TBF 记录上：
+
+| 腰带效果 | 原版判定 | 现在 |
+| --- | --- | --- |
+| 训练（Training）伤害倍率 | 攻击者是 `TamableAnimal` 且主人戴腰带 | 攻击者是该玩家的 TBF 宠物 |
+| 攻击经验 | 同上 | 同上 |
+
+腰带自身的倍率、等级与饰品槽加成全部沿用原版；只替换「谁是宠物」这一步。因此 TBF 收录的僵尸、模组召唤物等也能吃到加成，而未收录的别人的狗不会再吃你的腰带。
+
+需要说明：经验只能**追加**——原版已经结算过的原版宠物无法在不改 Relics 代码的前提下撤回，所以 `replaceVanillaRule` 对经验这项只影响「额外给谁」，不影响原版原有的那份。
+
 ## 实现方式
 
-不修改神秘遗物/扩展的任何类，也不使用 Mixin：
+不修改神秘遗物/扩展、Relics 的任何类，也不使用 Mixin：
 
-- 在 `LivingHurtEvent` / `LivingIncomingDamageEvent` 的 `HIGHEST` 阶段精确复刻原版判定与倍率；
+- 在 `LivingHurtEvent` 的 `HIGHEST` 阶段精确复刻原版判定与倍率；
 - 在 `LOWEST` 阶段把原版贡献除回去，再按 TBF 规则重新施加；
 - 在实体 tick 的 `LOWEST` 阶段对速度/攻速修饰符做同样的替换。
 
 这样既不会叠加两次，也不会误删其它模组的伤害修改。
+
+Relics 支持是可选依赖：只有检测到 `relics` 已加载时才注册对应事件处理器，未安装 Relics 时这些类不会被加载。
 
 ## 构建
 
@@ -46,8 +61,10 @@
 `config/trulyeternalhunt-common.toml`：
 
 - `enabled`：总开关
-- `replaceVanillaRule`：严格替换（默认 `true`）；`false` 时保留原版规则，只额外覆盖 TBF 宠物
+- `replaceVanillaRule`：严格替换（默认 `true`）；`false` 时保留原版规则，只额外覆盖 TBF 宠物（手册与腰带共用）
 - `requireCursedOne`：保留手册的诅咒者条件
 - `enableSpeedEffect`：速度/攻速部分也按新规则
+- `enableHuntingBelt`：猎手腰带兼容总开关
+- `enableHuntingBeltExperience`：腰带的宠物攻击经验
 - `ownerCacheSeconds`：TBF 记录缓存时间
 - `debug`：打印每次伤害调整

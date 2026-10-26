@@ -35,3 +35,15 @@ foreach ($item in $wanted) {
         Write-Warning "未在 $ModpackDir 找到 $($item.Pattern)"
     }
 }
+
+$downloads = @(
+    @{ Url = "https://cdn.modrinth.com/data/OCJRPujW/versions/C7tM1LJR/relics-1.20.1-0.8.0.13.jar";
+       Target = "relics-1.20.1-0.8.0.13.jar" }
+)
+foreach ($item in $downloads) {
+    $target = Join-Path $libs $item.Target
+    if (-not (Test-Path $target)) {
+        Invoke-WebRequest -Uri $item.Url -OutFile $target -UseBasicParsing -Headers @{ "User-Agent" = "trulyeternalhunt-setup" }
+        Write-Host "downloaded $($item.Target)"
+    }
+}
