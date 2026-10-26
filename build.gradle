@@ -54,7 +54,7 @@ repositories.named('Mojang Meta') {
 dependencies {
     // Compile-time view of the integration targets; all of them are provided by the game at runtime.
     compileOnly files(
-            'libs/trulybestfriends-0.2.5-1.21.1.jar',
+            'libs/trulybestfriends-0.2.6-1.21.1.jar',
             'libs/enigmaticlegacyplus-1.21.1-1.0.0.jar',
             'libs/curios-neoforge-9.5.1+1.21.1.jar',
             'libs/relics-1.21.1-0.12.10.jar',

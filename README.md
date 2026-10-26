@@ -43,6 +43,20 @@
 - 经验与宠物骨只能**追加**：原版已经结算过的原版宠物无法在不改 Relics 代码的前提下撤回，所以 `replaceVanillaRule=false/true` 对这两项都只影响「额外给谁」，不影响原版原有的那份。
 - 复活沿用 Relics 自己的 `relics:hunting_belt_bone_drop` 标记，所以宠物骨的掉落替换行为与原本一致。
 
+## 宠物骨（Pet Bone）
+
+1.21.1 的 Relics 在「兽群」第 5 阶解锁 Revival：宠物死亡留下宠物骨，骨头充满后右键复活。但 TBF 会在致命伤时拦截死亡（`die` 被 cancel，`LivingDeathEvent` 不会触发），所以原版逻辑对 TBF 宠物完全不生效。本模组把整条链路接到 TBF 上（需要 TBF 0.2.6+，开关 `enablePetBoneCompat`，默认开）：
+
+| 环节 | 原版 | 现在 |
+| --- | --- | --- |
+| 掉骨 | 宠物真正死亡时掉落 | TBF 把死亡存入快照时也掉落（主人需在线且戴有复活词条的腰带） |
+| 复活 | 用宠物骨里的实体数据原地生成一个**新 UUID** 的复制体 | 用骨头触发 **TBF 的复活**：按 TBF 快照恢复，保留原 UUID 与追踪状态，满血、附带图腾效果 |
+| 代价 | 宠物骨 + TBF 的复活物品与冷却（同时生效时） | 只消耗宠物骨，跳过 TBF 的复活物品与冷却 |
+| TBF 常规复活 | 可用 | 掉骨期间**被拒绝**（聊天栏提示「只能用宠物骨复活」），直到用骨头复活为止 |
+| 充能 | 玩家击杀非玩家生物，充能其背包里的每根骨头 | 玩家**与其 TBF 记录宠物**的击杀都会充能该玩家的骨头 |
+
+TBF 宠物掉骨时会先在它的快照里写入复活锁（`TBF_ReviveLocked`），所以「有骨头」必然等价于「TBF 常规复活已被拒绝」，且跨重启有效。复活锁只能通过使用这根骨头（或删除该宠物数据）解除。
+
 ## 实现方式
 
 不修改 Enigmatic Legacy+ / Relics 的任何类，也不使用 Mixin：
@@ -50,7 +64,8 @@
 - 在事件 `HIGHEST` 阶段精确复刻原版判定与倍率；
 - 在 `LOWEST` 阶段把原版贡献除回去，再按 TBF 规则重新施加；
 - 手册：`LivingIncomingDamageEvent` + `EntityTickEvent.Pre`（攻速/移速）；
-- 腰带：`LivingDamageEvent.Pre`（伤害、领袖减伤）、`LivingDamageEvent.Post`（经验）、`LivingDeathEvent`（宠物骨）。
+- 腰带：`LivingDamageEvent.Pre`（伤害、领袖减伤）、`LivingDamageEvent.Post`（经验）、`LivingDeathEvent`（宠物骨）；
+- 宠物骨：TBF 的 `PetStoredDeathEvent`（掉骨 + 复活锁）、`PlayerInteractEvent.RightClickItem`（改用 TBF 复活）、`LivingDeathEvent`（宠物击杀充能）。
 
 这样既不会叠加两次，也不会误删其它模组的伤害修改。
 
@@ -76,5 +91,6 @@ Relics 支持是可选依赖：只有检测到 `relics` 已加载时才注册对
 - `enableHuntingBeltResistance`：腰带「领袖」减伤的宠物统计
 - `enableHuntingBeltExperience`：腰带兽群经验 / 统计
 - `enableHuntingBeltRevival`：腰带复活掉落宠物骨
+- `enablePetBoneCompat`：宠物骨整条链路改走 TBF（掉骨 / 用骨头触发 TBF 复活 / 掉骨期间禁止 TBF 复活 / TBF 宠物击杀充能），默认开
 - `ownerCacheSeconds`：TBF 记录缓存时间
 - `debug`：打印每次伤害调整

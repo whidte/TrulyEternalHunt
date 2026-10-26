@@ -4,7 +4,7 @@
 
 | 文件 | 来源 |
 | --- | --- |
-| `trulybestfriends-0.2.5-1.21.1.jar` | 在 `../trulybestfriends`（1.21.1 分支）执行 `gradlew build`，从 `build/libs/` 复制 |
+| `trulybestfriends-0.2.6-1.21.1.jar` | 在 `../trulybestfriends`（1.21.1 分支）执行 `gradlew build`，从 `build/libs/` 复制 |
 | `enigmaticlegacyplus-1.21.1-1.0.0.jar` | [Enigmatic Legacy+ 1.0.0 on Modrinth](https://modrinth.com/mod/enigmaticlegacy-plus) |
 | `curios-neoforge-9.5.1+1.21.1.jar` | [Curios 9.5.1 on Modrinth](https://modrinth.com/mod/curios) |
 | `relics-1.21.1-0.12.10.jar` | [Relics 0.12.10 on Modrinth](https://modrinth.com/mod/relics-mod) |

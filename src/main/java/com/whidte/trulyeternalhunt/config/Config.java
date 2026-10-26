@@ -48,6 +48,14 @@ public final class Config {
             .comment("Also drop a pet bone when a TBF pet dies while the owner has the Revival rank.")
             .define("enableHuntingBeltRevival", true);
 
+    public static final ModConfigSpec.BooleanValue ENABLE_PET_BONE_COMPAT = BUILDER
+            .comment("Rework the pet bone into the TBF revive path (only active when Relics is installed).",
+                    "true: a TBF-stored death also drops a pet bone, that bone is what revives the pet through TBF,",
+                    "      TBF's own revive is refused until the bone is used, and TBF pets charge their owner's bones.",
+                    "false: bones only come from Relics' own death handling and revive a plain entity copy, and only",
+                    "      the killer's own inventory charges bones.")
+            .define("enablePetBoneCompat", true);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {

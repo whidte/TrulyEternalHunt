@@ -3,6 +3,7 @@ package com.whidte.trulyeternalhunt;
 import com.mojang.logging.LogUtils;
 import com.whidte.trulyeternalhunt.config.Config;
 import com.whidte.trulyeternalhunt.event.HuntingBeltEvents;
+import com.whidte.trulyeternalhunt.event.PetBoneEvents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -35,6 +36,7 @@ public final class TrulyEternalHunt {
         // on a mod list without it.
         if (ModList.get().isLoaded("relics")) {
             NeoForge.EVENT_BUS.register(HuntingBeltEvents.class);
+            NeoForge.EVENT_BUS.register(PetBoneEvents.class);
             LOGGER.info("[Truly Eternal Hunt] Hunting Belt now follows TBF pet records.");
         }
     }

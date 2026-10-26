@@ -11,7 +11,7 @@ $tbf = Get-ChildItem (Join-Path $TbfProject "build\libs") -Filter "trulybestfrie
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
 if ($tbf) {
-    Copy-Item $tbf.FullName (Join-Path $libs "trulybestfriends-0.2.5-1.21.1.jar") -Force
+    Copy-Item $tbf.FullName (Join-Path $libs "trulybestfriends-0.2.6-1.21.1.jar") -Force
     Write-Host "TBF: $($tbf.Name)"
 } else {
     Write-Warning "未找到 TBF 1.21.1 jar，请在 $TbfProject 执行 gradlew build"

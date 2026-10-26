@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 /**
@@ -35,6 +36,9 @@ import java.util.function.Predicate;
 public final class HuntingBeltCompat {
     /** Persistent-data flag the original sets so its {@code LivingDropsEvent} handler can eat the drops. */
     public static final String BONE_DROP_TAG = Relics.MODID + ":hunting_belt_bone_drop";
+
+    /** Key injected into the bone's entity data so a bone revive can be routed back to TBF. */
+    public static final String PET_UUID_KEY = "TrulyEternalHunt:PetUuid";
 
     private static final String PACK = "pack";
     private static final String LEADER = "leader";
@@ -186,20 +190,54 @@ public final class HuntingBeltCompat {
      * lets the original's own {@code LivingDropsEvent} handler replace the normal loot.
      */
     public static void dropPetBone(LivingEntity pet, LivingEntity owner, List<ItemStack> belts) {
+        pet.spawnAtLocation(createPetBone(pet, owner, belts, null));
+        pet.getPersistentData().putBoolean(BONE_DROP_TAG, true);
+        awardBoneDrop(owner, belts);
+    }
+
+    /** Builds the bone with the same numbers Relics uses, optionally remembering the pet's UUID. */
+    public static ItemStack createPetBone(LivingEntity pet, LivingEntity owner, List<ItemStack> belts,
+                                          @Nullable UUID petUuid) {
         double requiredHealth = Double.MAX_VALUE;
         for (ItemStack stack : belts) {
             requiredHealth = Math.min(requiredHealth, reviveHealthRequirement(owner, stack, pet));
         }
+        PetBoneItem.PetBoneData data = PetBoneItem.PetBoneData.fromEntity(pet, owner.getUUID(), requiredHealth);
+        if (petUuid != null) {
+            data.entityData().putString(PET_UUID_KEY, petUuid.toString());
+        }
         ItemStack bone = new ItemStack(RelicsItems.PET_BONE.get());
-        bone.set(RelicsDataComponents.PET_BONE_DATA.get(),
-                PetBoneItem.PetBoneData.fromEntity(pet, owner.getUUID(), requiredHealth));
-        pet.spawnAtLocation(bone);
-        pet.getPersistentData().putBoolean(BONE_DROP_TAG, true);
+        bone.set(RelicsDataComponents.PET_BONE_DATA.get(), data);
+        return bone;
+    }
+
+    /** The experience and statistics the original awards when it drops a bone. */
+    public static void awardBoneDrop(LivingEntity owner, List<ItemStack> belts) {
         for (ItemStack stack : belts) {
             RelicData data = data(owner, stack);
             data.getLevelingData().addExperience(PACK, "bone_drop", 1);
             data.getAbilitiesData().getAbilityData(PACK).getStatisticData()
                     .getMetricData("pet_bones").addValue(1);
+        }
+    }
+
+    /**
+     * Charges every pet bone in the player's inventory, exactly like the original does when the
+     * player kills a mob. Used to extend charging to kills made by the player's TBF pets.
+     */
+    public static void chargeBones(Player owner, double amount) {
+        if (amount <= 0.0D) {
+            return;
+        }
+        for (ItemStack stack : EntityUtils.findItemsInInventory(owner, RelicsItems.PET_BONE.get())) {
+            PetBoneItem.PetBoneData data = stack.getOrDefault(
+                    RelicsDataComponents.PET_BONE_DATA.get(), PetBoneItem.PetBoneData.EMPTY);
+            if (!data.isValid() || !owner.getUUID().equals(data.owner())
+                    || data.collectedHealth() >= data.requiredHealth()) {
+                continue;
+            }
+            double updated = Math.min(data.requiredHealth(), data.collectedHealth() + amount);
+            stack.set(RelicsDataComponents.PET_BONE_DATA.get(), data.withCollectedHealth(updated));
         }
     }
 
