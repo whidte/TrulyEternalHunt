@@ -103,10 +103,10 @@ TBF 宠物掉骨时会先在它的快照里写入复活锁（`TBF_ReviveLocked`�
 本模组只做一件事：把「是不是玩家」这一条拿掉。判定从 `instanceof Player`（或 `Player` 专用的 mixin）放宽成「**饰品栏里找得到这件饰品**」，对玩家、对 TBF 收录的生物用同一套查询：
 
 ```java
-CuriosApi.getCuriosInventory(wearer).isEquipped(item)   // wearer 可以是任何 LivingEntity
+CuriosApi.getCuriosInventory(wearer).map(h -> h.isEquipped(item)).orElse(false)   // wearer 可以是任何 LivingEntity
 ```
 
-所以一个生物身上是否真的有饰品槽，**由它所属的生物模组（或其数据包）决定，本模组不加槽、也不提供装备入口**。没有槽位的生物，查询自然返回 false，上表对它不生效，也不会报错或干扰原逻辑；一旦那个生物模组给它的生物配了槽位，这些饰品就直接可用，无需再做适配。
+所以一个生物身上是否真的有饰品槽，**由它所属的生物模组（或其数据包）决定，本模组不加槽、也不提供装备入口**。没有槽位的生物，查询自然返回 false，上表、以及本模组更早的 Enigmatic Legacy+ 饰品层对它都不生效，也不会报错或干扰原逻辑；一旦那个生物模组给它的生物配了槽位，这些饰品就直接可用，无需再做适配。
 
 需要自己给生物加槽的作者，槽位还是走 Curios 的数据文件（放在模组 jar 或数据包里）：
 
