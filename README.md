@@ -98,11 +98,17 @@ TBF 宠物掉骨时会先在它的快照里写入复活锁（`TBF_ReviveLocked`�
 
 粒子与音效照旧省略，它们只影响观感。
 
-### 前提：宠物得先有饰品槽
+### 判定范围：戴着就生效，不代劳加槽
 
-Dream Relics 的饰品走 Curios。Curios 只为 `data/<模组>/curios/entities/*.json` 里列出的实体类型创建饰品槽，原版只列了 `minecraft:player`（Dream Relics 自己另外列了 `minecraft:armor_stand`）。也就是说**一只狼默认没有任何饰品槽**，`CuriosApi.getCuriosInventory()` 对它返回空 —— 上表只有在目标生物确实戴着对应饰品时才生效。
+本模组只做一件事：把「是不是玩家」这一条拿掉。判定从 `instanceof Player`（或 `Player` 专用的 mixin）放宽成「**饰品栏里找得到这件饰品**」，对玩家、对 TBF 收录的生物用同一套查询：
 
-要让生物能戴，需要给它所属的实体类型加槽位，例如数据包：
+```java
+CuriosApi.getCuriosInventory(wearer).isEquipped(item)   // wearer 可以是任何 LivingEntity
+```
+
+所以一个生物身上是否真的有饰品槽，**由它所属的生物模组（或其数据包）决定，本模组不加槽、也不提供装备入口**。没有槽位的生物，查询自然返回 false，上表对它不生效，也不会报错或干扰原逻辑；一旦那个生物模组给它的生物配了槽位，这些饰品就直接可用，无需再做适配。
+
+需要自己给生物加槽的作者，槽位还是走 Curios 的数据文件（放在模组 jar 或数据包里）：
 
 ```json
 // data/<命名空间>/curios/entities/pets.json
@@ -112,13 +118,12 @@ Dream Relics 的饰品走 Curios。Curios 只为 `data/<模组>/curios/entities/
 }
 ```
 
-几点实测结论（Curios 9.5.1+1.21.1）：
+两点实测结论（Curios 9.5.1+1.21.1）：
 
-- **实体只能写具体 id，不能写 `#标签`。** Curios 虽然对 `"#"` 开头的条目有分支，但它把带 `#` 的整个字符串丢进 `ResourceLocation.parse`，而 `#` 不是合法命名空间字符 —— 于是抛 `ResourceLocationException`，且这个异常没有被捕获，结果是**服务器直接启动失败**（`Failed to load datapacks, can't proceed with server load`）。1.20.1 的 Curios 5.14.1 同理会静默建不出槽位（不报错、也不生效）。
-- 槽位名必须是已注册的槽位类型，否则 Curios 只会在日志里抱怨一句就跳过。
-- 加槽位不等于能戴：原版 `/curios` 命令只接受玩家，也没有「拿着饰品右键宠物」的原版交互。真要让宠物戴上，还得有别的模组或命令来写入它的饰品栏。所以这一层在多数整合包里是**待用**状态，本模组只保证「一旦戴上就生效」。
+- **实体只能写具体 id，不能写 `#标签`。** Curios 虽然对 `"#"` 开头的条目有分支，但它把带 `#` 的整个字符串丢进 `ResourceLocation.parse`，而 `#` 不是合法命名空间字符 —— 于是抛 `ResourceLocationException`，且这个异常没有被捕获，结果是**服务器直接启动失败**（`Failed to load datapacks, can't proceed with server load`）。1.20.1 的 Curios 5.14.1 同样不剥 `#`，只是那边构造器不校验字符集，表现为**静默建不出槽位**（不报错、也不生效）。
+- 槽位名必须是已注册的槽位类型，否则 Curios 只在日志里抱怨一句就跳过。
 
-TBF 能收录任意生物，而静态数据包只能逐个实体类型枚举，所以「任意生物都能戴饰品」这一层本模组没有做 —— 那需要 Mixin 或反射改写 Curios 的内部表，与「不碰其它模组的类」这条前提冲突。
+另：原版 `/curios` 命令只接受玩家，也没有「拿着饰品右键生物」的原生交互，所以把饰品放进生物饰品栏的手段同样取决于那个生物模组。
 
 ## 实现方式
 
