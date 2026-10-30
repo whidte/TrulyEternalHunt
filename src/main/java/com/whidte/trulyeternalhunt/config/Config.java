@@ -56,6 +56,21 @@ public final class Config {
                     "      the killer's own inventory charges bones.")
             .define("enablePetBoneCompat", true);
 
+    public static final ModConfigSpec.BooleanValue ENABLE_DREAM_RELICS = BUILDER
+            .comment("Enable the Dream Relics integration (only active when Dream Relics is installed).",
+                    "Trinkets handled: astral_necklace, void_necklace, memory_necklace, heart_voice_pendant,",
+                    "echo_earring, tassel_ring, mist_veil_ring, dark_whisper_ring, endless_dream,",
+                    "ocean_current_blessing, plus the royal_crown reroute below.")
+            .define("enableDreamRelics", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_DREAM_RELICS_CROWN = BUILDER
+            .comment("Reroute the Royal Crown: its tamed-animal rule becomes",
+                    "\"creatures recorded by TBF under the player wearing the crown\".",
+                    "Covers the pet damage reduction, the pet damage boost and the pet size scaling.",
+                    "Respects replaceVanillaRule: when that is false the tamed rule stays and TBF pets",
+                    "are merely added on top.")
+            .define("enableDreamRelicsCrown", true);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {

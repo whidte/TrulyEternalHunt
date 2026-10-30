@@ -2,12 +2,12 @@
 
 让宠物类物品的加成改用 **真正永恒的伙伴（Truly Best Friends, TBF）** 的收录记录来判定「谁算我的宠物」。
 
-- 1.21.1 / NeoForge：`enigmaticlegacyplus:sanguinary_handbook`（Enigmatic Legacy+ 1.0.0+，可选）、`relics:hunting_belt`（Relics 0.12.10+，可选）
+- 1.21.1 / NeoForge：`enigmaticlegacyplus:sanguinary_handbook`（Enigmatic Legacy+ 1.0.0+，可选）、`relics:hunting_belt`（Relics 0.12.10+，可选）、`dream_relics:royal_crown` 等（Dream Relics 1.0.3+，可选）
 - 1.20.1 / Forge 版本在 `master` 分支。
 
-两个联动目标都是**可选**且互相独立的，只装其中之一时只有对应的那半生效；都装上就两半同时生效。唯一的硬前置是「真正永恒的伙伴」。
+三个联动目标都是**可选**且互相独立的，只装其中之一时只有对应的那部分生效；都装上就三部分同时生效。唯一的硬前置是「真正永恒的伙伴」。
 
-Curios 也不再是硬前置（`type="optional"`，版本范围写成 `[0,)`）：本模组从不直接调用 Curios，饰品栏判定都发生在 EL+ / Relics 内部，由它们自己去要求 Curios。这样即使你装的 Curios 版本与某个模组的期望不符，也不会因为本模组而卡在启动界面。
+Curios 也不是硬前置（`type="optional"`，版本范围写成 `[0,)`）：只有 Dream Relics 那一层会直接调用 Curios，其余饰品栏判定都发生在 EL+ / Relics 内部，由它们自己去要求 Curios。这样即使你装的 Curios 版本与某个模组的期望不符，也不会因为本模组而卡在启动界面。
 
 ## 血腥狩猎手册
 
@@ -61,28 +61,91 @@ Curios 也不再是硬前置（`type="optional"`，版本范围写成 `[0,)`）�
 
 TBF 宠物掉骨时会先在它的快照里写入复活锁（`TBF_ReviveLocked`），所以「有骨头」必然等价于「TBF 常规复活已被拒绝」，且跨重启有效。复活锁只能通过使用这根骨头（或删除该宠物数据）解除。
 
+## Dream Relics
+
+安装 Dream Relics（`dream_relics`，需同时安装 Curios）后自动启用，分成两部分。
+
+### 王室之冠（Royal Crown）
+
+原版判定：佩戴者**驯服的**生物受伤 ×0.6、造成伤害 ×1.2、体型放大到 1.5 倍 —— 也就是 `TamableAnimal` 且主人是佩戴者。
+
+现在判定：「**当前佩戴王冠玩家的 TBF 收录生物**」。链条是：
+
+1. 这只生物（受伤方或攻击方）被 TBF 收录；
+2. 在它的 TBF 记录里找到记名的玩家；
+3. 该玩家此刻戴着王室之冠。
+
+于是僵尸、模组召唤物等不实现 `OwnableEntity` 的生物也能吃到这顶王冠，而未收录的别人的狗不再吃你的王冠。三项效果全部跟着走：减伤、增伤、体型（体型用的是 Dream Relics 自己的修饰符 id `dream_relics:royal_crown_size`，两层不会叠加）。倍率仍读 Dream Relics 自己的配置（`royalCrownPetDamageReduction` / `royalCrownPetDamageBoost` / `royalCrownPetSizeScale`），并沿用 `replaceVanillaRule`：设为 `false` 时保留原版驯服判定，只额外追加 TBF 生物。
+
+### 只对玩家生效的饰品
+
+下列饰品原本把 `instanceof Player` 写死在 `EventHandler` 或 `LivingEntity` 的 mixin 里，现在对 TBF 收录的生物同样生效；数值全部继续读 Dream Relics 的配置：
+
+| 饰品 | 效果 |
+| --- | --- |
+| `astral_necklace` 星界项链 | 攻击时无视目标 30% 护甲与 10 点护甲 |
+| `void_necklace` 虚空项链 | 免疫无来源伤害（摔落、火焰、虚空……） |
+| `memory_necklace` 回忆项链 | 受伤时积蓄，下次攻击追加（上限读配置） |
+| `heart_voice_pendant` 心声吊坠 | 单次受到的伤害不超过最大生命的一定比例 |
+| `echo_earring` 回响耳坠 | 命中时有几率沿视线方向打出音波 |
+| `tassel_ring` 流苏戒指 | 目标生命越高，伤害越高 |
+| `mist_veil_ring` 薄雾面纱戒指 | 免疫所有负面效果 |
+| `dark_whisper_ring` 暗黑低语戒指 | 亡灵不会把佩戴者选为目标（被反击时仍会追击） |
+| `endless_dream` 无尽之梦 | 命中时有几率让目标陷入沉睡 |
+| `ocean_current_blessing` 洋流祝福 | 水下不消耗氧气 |
+
+未适配（原因）：`royal_lens`（`CriticalHitEvent` 只对玩家触发）、`past_ring`（需要玩家经验与背包）、`years_amber` / `rare_gold_bracelet`（破坏/采集事件只对玩家触发）、`pure_holy_grail` / `dream_balance`（经验）、`time_hourglass` / `moment_stone` / `soul_mirror` / `liminal_key` / `memory_stardust` / `flawless_gem` / `nightmare_book`（玩家交互与方块逻辑）、`observe_self_eye`（纯客户端辉光）、`icarus_wings` / `elven_boots`（移动与跳跃写在 mixin 里，服务器侧无法复刻）、`dream_totem`（TBF 在死亡处理阶段就拦下了宠物死亡，`LivingDeathEvent` 不会触发）。
+
+粒子与音效照旧省略，它们只影响观感。
+
+### 前提：宠物得先有饰品槽
+
+Dream Relics 的饰品走 Curios。Curios 只为 `data/<模组>/curios/entities/*.json` 里列出的实体类型创建饰品槽，原版只列了 `minecraft:player`（Dream Relics 自己另外列了 `minecraft:armor_stand`）。也就是说**一只狼默认没有任何饰品槽**，`CuriosApi.getCuriosInventory()` 对它返回空 —— 上表只有在目标生物确实戴着对应饰品时才生效。
+
+要让生物能戴，需要给它所属的实体类型加槽位，例如数据包：
+
+```json
+// data/<命名空间>/curios/entities/pets.json
+{
+  "entities": ["minecraft:wolf", "minecraft:cat", "minecraft:horse"],
+  "slots": ["charm", "necklace", "ring", "head", "hands", "belt", "feet", "bracelet", "body"]
+}
+```
+
+几点实测结论（Curios 9.5.1+1.21.1）：
+
+- **实体只能写具体 id，不能写 `#标签`。** Curios 虽然对 `"#"` 开头的条目有分支，但它把带 `#` 的整个字符串丢进 `ResourceLocation.parse`，而 `#` 不是合法命名空间字符 —— 于是抛 `ResourceLocationException`，且这个异常没有被捕获，结果是**服务器直接启动失败**（`Failed to load datapacks, can't proceed with server load`）。1.20.1 的 Curios 5.14.1 同理会静默建不出槽位（不报错、也不生效）。
+- 槽位名必须是已注册的槽位类型，否则 Curios 只会在日志里抱怨一句就跳过。
+- 加槽位不等于能戴：原版 `/curios` 命令只接受玩家，也没有「拿着饰品右键宠物」的原版交互。真要让宠物戴上，还得有别的模组或命令来写入它的饰品栏。所以这一层在多数整合包里是**待用**状态，本模组只保证「一旦戴上就生效」。
+
+TBF 能收录任意生物，而静态数据包只能逐个实体类型枚举，所以「任意生物都能戴饰品」这一层本模组没有做 —— 那需要 Mixin 或反射改写 Curios 的内部表，与「不碰其它模组的类」这条前提冲突。
+
 ## 实现方式
 
-不修改 Enigmatic Legacy+ / Relics 的任何类，也不使用 Mixin：
+不修改 Enigmatic Legacy+ / Relics / Dream Relics 的任何类，也不使用 Mixin：
 
 - 在事件 `HIGHEST` 阶段精确复刻原版判定与倍率；
 - 在 `LOWEST` 阶段把原版贡献除回去，再按 TBF 规则重新施加；
 - 手册：`LivingIncomingDamageEvent` + `EntityTickEvent.Pre`（攻速/移速）；
 - 腰带：`LivingDamageEvent.Pre`（伤害、领袖减伤）、`LivingDamageEvent.Post`（经验）、`LivingDeathEvent`（宠物骨）；
-- 宠物骨：TBF 的 `PetStoredDeathEvent`（掉骨 + 复活锁）、`PlayerInteractEvent.RightClickItem`（改用 TBF 复活）、`LivingDeathEvent`（宠物击杀充能）。
+- 宠物骨：TBF 的 `PetStoredDeathEvent`（掉骨 + 复活锁）、`PlayerInteractEvent.RightClickItem`（改用 TBF 复活）、`LivingDeathEvent`（宠物击杀充能）；
+- Dream Relics：`LivingIncomingDamageEvent`（王室之冠的替换、护甲穿透、其余饰品）、`EntityTickEvent.Pre`（王室之冠的体型修饰符）、`LivingBreatheEvent`、`LivingChangeTargetEvent`、`MobEffectEvent.Applicable`。
+
+「只对玩家生效」的饰品是直接把原方法体照抄、只把佩戴者从玩家放宽成任意生物，不做「先除回再重算」那一步 —— 这些效果对宠物本来就没结算过。
 
 这样既不会叠加两次，也不会误删其它模组的伤害修改。
 
 ## 可选联动
 
-`enigmaticlegacyplus` 与 `relics` 都是可选依赖，且彼此独立：
+`enigmaticlegacyplus`、`relics`、`dream_relics` 都是可选依赖，且彼此独立：
 
 | 装了什么 | 生效的部分 |
 | --- | --- |
 | 只有 EL+ | 血腥狩猎手册（伤害 + 攻速/移速） |
 | 只有 Relics | 猎手腰带（伤害、领袖减伤、兽群经验）+ 宠物骨整套机制 |
-| 两个都有 | 全部 |
-| 都没有 | 模组正常加载但什么都不做，日志里给一条 warning |
+| 只有 Dream Relics | 王室之冠改判定 + 只对玩家生效的饰品 |
+| 想装几个装几个 | 各自对应部分同时生效 |
+| 都没装 | 模组正常加载但什么都不做，日志里给一条 warning |
 
 实现上，凡是会碰到目标模组类型的处理器类都**不再**用 `@EventBusSubscriber` 自动注册，而是由主类在 `ModList.get().isLoaded(...)` 为真时手动 `register(...)`。这样目标模组不存在时，这些类根本不会被加载，也就不会出现 `NoClassDefFoundError`。
 
@@ -107,5 +170,7 @@ TBF 宠物掉骨时会先在它的快照里写入复活锁（`TBF_ReviveLocked`�
 - `enableHuntingBeltExperience`：腰带兽群经验 / 统计
 - `enableHuntingBeltRevival`：腰带复活掉落宠物骨
 - `enablePetBoneCompat`：宠物骨整条链路改走 TBF（掉骨 / 用骨头触发 TBF 复活 / 掉骨期间禁止 TBF 复活 / TBF 宠物击杀充能），默认开
+- `enableDreamRelics`：Dream Relics 联动总开关（王室之冠 + 只对玩家生效的饰品）
+- `enableDreamRelicsCrown`：王室之冠的判定改写（减伤、增伤、体型；`replaceVanillaRule` 对它同样有效）
 - `ownerCacheSeconds`：TBF 记录缓存时间
 - `debug`：打印每次伤害调整

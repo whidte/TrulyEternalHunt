@@ -58,7 +58,8 @@ dependencies {
             'libs/enigmaticlegacyplus-1.21.1-1.0.0.jar',
             'libs/curios-neoforge-9.5.1+1.21.1.jar',
             'libs/relics-1.21.1-0.12.10.jar',
-            'libs/OctoLib-NEOFORGE-0.6.2+1.21.jar'
+            'libs/OctoLib-NEOFORGE-0.6.2+1.21.jar',
+            'libs/dream_relics-1.0.5-neoforge+mc1.21.1.jar'
     )
 }
 

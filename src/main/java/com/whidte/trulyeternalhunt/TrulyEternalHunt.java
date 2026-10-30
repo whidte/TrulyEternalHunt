@@ -2,6 +2,8 @@ package com.whidte.trulyeternalhunt;
 
 import com.mojang.logging.LogUtils;
 import com.whidte.trulyeternalhunt.config.Config;
+import com.whidte.trulyeternalhunt.event.DreamRelicsCrownEvents;
+import com.whidte.trulyeternalhunt.event.DreamRelicsCurioEvents;
 import com.whidte.trulyeternalhunt.event.HandbookEvents;
 import com.whidte.trulyeternalhunt.event.HuntingBeltEvents;
 import com.whidte.trulyeternalhunt.event.PetBoneEvents;
@@ -22,11 +24,13 @@ import org.slf4j.Logger;
  *
  * <ul>
  *   <li>Enigmatic Legacy+ Sanguinary Hunting Handbook ({@code enigmaticlegacyplus:sanguinary_handbook}), when EL+ is installed;</li>
- *   <li>Relics Hunting Belt ({@code relics:hunting_belt}) and the pet bone, when Relics is installed.</li>
+ *   <li>Relics Hunting Belt ({@code relics:hunting_belt}) and the pet bone, when Relics is installed;</li>
+ *   <li>Dream Relics player-only trinkets, plus the Royal Crown ({@code dream_relics:royal_crown}) whose
+ *       tamed-animal rule becomes a TBF rule, when Dream Relics is installed.</li>
  * </ul>
  *
- * <p>Both integrations are optional and completely independent: neither target mod is required, and
- * installing only one of them still enables just that half. Every handler class that touches a target
+ * <p>All integrations are optional and completely independent: no target mod is required, and
+ * installing only one of them still enables just that part. Every handler class that touches a target
  * mod's types is registered here instead of through {@code @EventBusSubscriber}, so its class never
  * loads when the target mod is absent.</p>
  */
@@ -39,12 +43,17 @@ public final class TrulyEternalHunt {
     public static final String ENIGMATIC_LEGACY_PLUS = "enigmaticlegacyplus";
     /** Mod id of Relics (hunting belt + pet bone integration). */
     public static final String RELICS = "relics";
+    /** Mod id of Dream Relics (royal crown reroute + player-only trinkets for pets). */
+    public static final String DREAM_RELICS = "dream_relics";
+    /** Mod id of Curios, which Dream Relics uses to find the worn trinket. */
+    public static final String CURIOS = "curios";
 
     public TrulyEternalHunt(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
         boolean handbook = ModList.get().isLoaded(ENIGMATIC_LEGACY_PLUS);
         boolean relics = ModList.get().isLoaded(RELICS);
+        boolean dreamRelics = ModList.get().isLoaded(DREAM_RELICS) && ModList.get().isLoaded(CURIOS);
 
         if (handbook) {
             NeoForge.EVENT_BUS.register(HandbookEvents.class);
@@ -64,9 +73,18 @@ public final class TrulyEternalHunt {
                     RELICS);
         }
 
-        if (!handbook && !relics) {
-            LOGGER.warn("[Truly Eternal Hunt] Neither {} nor {} is installed, so this mod has nothing to do.",
-                    ENIGMATIC_LEGACY_PLUS, RELICS);
+        if (dreamRelics) {
+            NeoForge.EVENT_BUS.register(DreamRelicsCrownEvents.class);
+            NeoForge.EVENT_BUS.register(DreamRelicsCurioEvents.class);
+            LOGGER.info("[Truly Eternal Hunt] Royal Crown and player-only Dream Relics trinkets now work on TBF pets.");
+        } else {
+            LOGGER.info("[Truly Eternal Hunt] {} (with {}) is not installed; Dream Relics integration stays off.",
+                    DREAM_RELICS, CURIOS);
+        }
+
+        if (!handbook && !relics && !dreamRelics) {
+            LOGGER.warn("[Truly Eternal Hunt] None of {}, {} or {} is installed, so this mod has nothing to do.",
+                    ENIGMATIC_LEGACY_PLUS, RELICS, DREAM_RELICS);
         }
     }
 }
