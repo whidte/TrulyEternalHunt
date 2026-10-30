@@ -39,6 +39,29 @@ public final class Config {
             .comment("Also spread belt experience when a TBF pet deals damage.")
             .define("enableHuntingBeltExperience", true);
 
+    public static final ForgeConfigSpec.BooleanValue ENABLE_CURIO_PET_COMPAT = BUILDER
+            .comment("Re-apply Enigmatic Legacy / Enigmatic Addons curios to TBF pets.",
+                    "Only curios whose effect is player-gated but otherwise living-entity safe are covered;",
+                    "curios that need a player-only API (flight, experience, item pickup, key binds) are skipped.",
+                    "Spellstones handled: golem_heart, enigmatic_amulet, berserk_charm, mining_charm,",
+                    "ocean_stone, the_cube, void_pearl, eye_of_nebula, cursed_ring, forgotten_ice,",
+                    "scorched_charm, hell_blade_charm, avarice_ring.")
+            .define("enableCurioPetCompat", true);
+
+    public static final ForgeConfigSpec.BooleanValue ENABLE_DREAM_RELICS = BUILDER
+            .comment("Enable the Dream Relics integration (only active when Dream Relics is installed).",
+                    "Trinkets handled: astral_necklace, void_necklace, memory_necklace, heart_voice_pendant,",
+                    "echo_earring, tassel_ring, mist_veil_ring, dark_whisper_ring, endless_dream,",
+                    "ocean_current_blessing, plus the royal_crown reroute below.")
+            .define("enableDreamRelics", true);
+
+    public static final ForgeConfigSpec.BooleanValue ENABLE_DREAM_RELICS_CROWN = BUILDER
+            .comment("Reroute the Royal Crown: its tamed-animal rule becomes",
+                    "\"creatures recorded by TBF under the player wearing the crown\".",
+                    "Respects replaceVanillaRule: when that is false the tamed rule stays and TBF pets",
+                    "are merely added on top.")
+            .define("enableDreamRelicsCrown", true);
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     private Config() {

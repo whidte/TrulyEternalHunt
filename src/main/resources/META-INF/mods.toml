@@ -8,9 +8,10 @@ version="${mod_version}"
 displayName="真正永恒的狩猎"
 authors="whidte"
 description='''让宠物类物品改为依据「真正永恒的伙伴」的宠物记录来判定。
-两个联动目标都是可选的，可以只装其中一个：
-- 血腥狩猎手册（安装 Enigmatic Legacy+ / Enigmatic Addons 时生效）：只有被 TBF 收录、且主人是该玩家的宠物，才能获得手册的宠物攻击伤害与速度加成；
-- Relics 猎手腰带（安装 Relics 时生效）：伤害加成与腰带经验也改按 TBF 记录判定。'''
+三个联动目标都是可选的，可以只装其中任意几个：
+- 血腥狩猎手册（安装 Enigmatic Legacy / Enigmatic Addons 时生效）：只有被 TBF 收录、且主人是该玩家的宠物，才能获得手册的宠物攻击伤害与速度加成；
+- Relics 猎手腰带（安装 Relics 时生效）：伤害加成与腰带经验也改按 TBF 记录判定；
+- Dream Relics（安装 Dream Relics 时生效）：只对玩家生效的饰品改为对 TBF 收录的生物同样生效，王室之冠的判定从「驯服的生物」改为「当前佩戴玩家的 TBF 收录生物」。'''
 
 [[dependencies.trulyeternalhunt]]
     modId="forge"
@@ -51,5 +52,19 @@ description='''让宠物类物品改为依据「真正永恒的伙伴」的宠�
     modId="relics"
     mandatory=false
     versionRange="[0.8.0.13,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.trulyeternalhunt]]
+    modId="curios"
+    mandatory=false
+    versionRange="[5.2.0+1.20.1,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.trulyeternalhunt]]
+    modId="dream_relics"
+    mandatory=false
+    versionRange="[1.0.3,)"
     ordering="AFTER"
     side="BOTH"

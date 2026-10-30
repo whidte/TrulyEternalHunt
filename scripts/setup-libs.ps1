@@ -38,7 +38,9 @@ foreach ($item in $wanted) {
 
 $downloads = @(
     @{ Url = "https://cdn.modrinth.com/data/OCJRPujW/versions/C7tM1LJR/relics-1.20.1-0.8.0.13.jar";
-       Target = "relics-1.20.1-0.8.0.13.jar" }
+       Target = "relics-1.20.1-0.8.0.13.jar" },
+    @{ Url = "https://cdn.modrinth.com/data/zU7VvEmB/versions/76qVou35/dream_relics-1.0.3-forge%2Bmc1.20.1.jar";
+       Target = "dream_relics-1.0.3-forge+mc1.20.1.jar" }
 )
 foreach ($item in $downloads) {
     $target = Join-Path $libs $item.Target
