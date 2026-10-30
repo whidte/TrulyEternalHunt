@@ -77,8 +77,11 @@ public final class TrulyEternalHunt {
             NeoForge.EVENT_BUS.register(DreamRelicsCrownEvents.class);
             NeoForge.EVENT_BUS.register(DreamRelicsCurioEvents.class);
             LOGGER.info("[Truly Eternal Hunt] Royal Crown and player-only Dream Relics trinkets now work on TBF pets.");
+        } else if (!ModList.get().isLoaded(DREAM_RELICS)) {
+            LOGGER.info("[Truly Eternal Hunt] {} is not installed; Dream Relics integration stays off.",
+                    DREAM_RELICS);
         } else {
-            LOGGER.info("[Truly Eternal Hunt] {} (with {}) is not installed; Dream Relics integration stays off.",
+            LOGGER.warn("[Truly Eternal Hunt] {} is installed but {} is missing; Dream Relics integration stays off.",
                     DREAM_RELICS, CURIOS);
         }
 
